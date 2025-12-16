@@ -1,4 +1,5 @@
-{{ config(materialized="incremental", unique_key="hash_natural_key") }}
+
+{{ config(materialized="incremental") }}
 
 with base as (
   select
@@ -12,9 +13,11 @@ with base as (
 ),
 keys as (
   select
-    {{ hash_key("country_bkey") }}  as hk_country,
-    {{ hash_key("indicator_bkey") }} as hk_indicator,
-    {{ hash_key("upper(trim(country_bkey)) || '|' || upper(trim(indicator_bkey)) || '|' || cast(year as varchar)") }} as hash_natural_key,
+    lower(hex(sha256(upper(trim(country_bkey)))))   as hk_country,
+    lower(hex(sha256(upper(trim(indicator_bkey))))) as hk_indicator,
+    lower(hex(sha256(upper(trim(
+      upper(trim(country_bkey)) || '|' || upper(trim(indicator_bkey)) || '|' || cast(year as varchar)
+    ))))) as hash_natural_key,
     *
   from base
 ),
@@ -23,10 +26,12 @@ diffs as (
     hk_country,
     hk_indicator,
     hash_natural_key,
-    {{ hash_diff(["coalesce(cast(value as varchar),'NULL')",
-                  "coalesce(unit,'NULL')",
-                  "coalesce(obs_status,'NULL')",
-                  "coalesce(cast(decimal_places as varchar),'NULL')"]) }} as hd_attributes,
+    lower(hex(sha256(upper(trim(
+      coalesce(cast(value as varchar),'NULL')        || '|' ||
+      coalesce(unit,'NULL')                          || '|' ||
+      coalesce(obs_status,'NULL')                    || '|' ||
+      coalesce(cast(decimal_places as varchar),'NULL')
+    ))))) as hd_attributes,
     value, unit, obs_status, decimal_places,
     year,
     current_timestamp as load_dt
@@ -35,8 +40,10 @@ diffs as (
 
 select * from diffs
 {% if is_incremental() %}
-  -- For incremental loads, insert only when hd_attributes changed for hash_natural_key
-  where (hash_natural_key, hd_attributes) not in (
-    select hash_natural_key, hd_attributes from {{ this }}
+  where not exists (
+    select 1
+    from {{ this }} t
+    where t.hash_natural_key = diffs.hash_natural_key
+      and t.hd_attributes   = diffs.hd_attributes
   )
 {% endif %}

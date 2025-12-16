@@ -3,7 +3,7 @@
 -- USGS GeoJSON FeatureCollection: features[] with properties + geometry.  [12](https://doc.wikimedia.org/generated-data-platform/aqs/analytics-api/concepts/page-views.html)
 
 with raw as (
-  select * from read_json_auto('{{ source("raw_vault","usgs_all_day").meta["s3_glob"] }}')
+  select * from read_json_auto('{{ get_source_meta("raw_vault","usgs_all_day","s3_glob") }}')
 ),
 features as (
   select unnest(raw->'$.features') as f from raw

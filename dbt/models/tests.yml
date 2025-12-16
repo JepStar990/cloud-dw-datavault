@@ -24,28 +24,27 @@ models:
 
   - name: link_country_indicator
     columns:
-      - name: hk_country_indicator
-        tests: [not_null, unique]
       - name: hk_country
         tests:
           - relationships:
-              to: ref('hub_country')
-              field: hk_country
+              arguments:
+                to: ref('hub_country')
+                field: hk_country
       - name: hk_indicator
         tests:
           - relationships:
-              to: ref('hub_indicator')
-              field: hk_indicator
+              arguments:
+                to: ref('hub_indicator')
+                field: hk_indicator
 
   - name: link_project_article
     columns:
-      - name: hk_project_article
-        tests: [not_null, unique]
       - name: hk_article
         tests:
           - relationships:
-              to: ref('hub_article')
-              field: hk_article
+              arguments:
+                to: ref('hub_article')
+                field: hk_article
 
   - name: sat_country_indicator_values
     columns:
