@@ -16,5 +16,6 @@ output "ec2_public_dns" {
 
 output "resolved_al2023_ami" {
   value = data.aws_ssm_parameter.al2023_ami.value
+  sensitive  = true
 }
 

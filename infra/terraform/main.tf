@@ -19,3 +19,4 @@ provider "aws" {
            Env     = "dev"
     }
   }
+}

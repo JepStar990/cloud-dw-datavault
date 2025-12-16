@@ -1,0 +1,54 @@
+# -------------------------
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# -------------------------
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.env
+.venv
+venv/
+ENV/
+*.log
+
+# -------------------------
+# dbt
+dbt/target/
+dbt/logs/
+dbt/.dbt/
+
+# -------------------------
+# Dagster
+.orchestration/dagster/.dagster/
+.orchestration/dagster/storage/
+
+# -------------------------
+# Terraform
+infra/terraform/.terraform/
+infra/terraform/.*
+infra/terraform/terraform.tfstate
+infra/terraform/terraform.tfstate.backup
+infra/terraform/tfplan
+
+# -------------------------
+# AWS CLI binaries/examples
+aws/dist/
+.aws/
+aws/
+*.*.pem
+*.key
+*.tfvars
+
+# -------------------------
+# Docker
+docker-compose.override.yml
