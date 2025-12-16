@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: hub_country
+    columns:
+      - name: hk_country
+        tests: [not_null, unique]
+      - name: country_bkey
+        tests: [not_null, unique]
+
+  - name: hub_indicator
+    columns:
+      - name: hk_indicator
+        tests: [not_null, unique]
+      - name: indicator_bkey
+        tests: [not_null, unique]
+
+  - name: hub_article
+    columns:
+      - name: hk_article
+        tests: [not_null, unique]
+      - name: article_bkey
+        tests: [not_null, unique]
+
+  - name: link_country_indicator
+    columns:
+      - name: hk_country_indicator
+        tests: [not_null, unique]
+      - name: hk_country
+        tests:
+          - relationships:
+              to: ref('hub_country')
+              field: hk_country
+      - name: hk_indicator
+        tests:
+          - relationships:
+              to: ref('hub_indicator')
+              field: hk_indicator
+
+  - name: link_project_article
+    columns:
+      - name: hk_project_article
+        tests: [not_null, unique]
+      - name: hk_article
+        tests:
+          - relationships:
+              to: ref('hub_article')
+              field: hk_article
+
+  - name: sat_country_indicator_values
+    columns:
+      - name: hash_natural_key
+        tests: [not_null]
+      - name: hd_attributes
+        tests: [not_null]
+
+  - name: sat_article_views
+    columns:
+      - name: hash_natural_key
+        tests: [not_null]
+      - name: hd_attributes
+        tests: [not_null]

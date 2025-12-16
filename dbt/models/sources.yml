@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: raw_vault
+    description: "Raw JSON payloads in S3 (immutable)."
+
+    tables:
+      - name: worldbank_pop_za
+        description: "World Bank SP.POP.TOTL for ZA (multiple dumps)."
+        meta:
+          s3_glob: "s3://cloud-dw-datavault-raw-vault/worldbank/SP.POP.TOTL/ZA/*.json.gz"
+      - name: wikimedia_mandela
+        description: "Wikimedia pageviews for Nelson_Mandela (daily range dump)."
+        meta:
+          s3_glob: "s3://cloud-dw-datavault-raw-vault/wikimedia/en.wikipedia.org/Nelson_Mandela/*/*.json.gz"
+      - name: usgs_all_day
+        description: "USGS earthquakes all_day GeoJSON dumps."
+        meta:
+          s3_glob: "s3://cloud-dw-datavault-raw-vault/usgs/earthquakes/all_day/*.geojson.gz"
