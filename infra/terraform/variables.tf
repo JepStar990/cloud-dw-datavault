@@ -19,7 +19,7 @@ variable "instance_type" {
 variable "ssh_key_name" {
   description = "Existing EC2 key pair name for SSH access"
   type        = string
-  default     = "" # set to your key pair if you want SSH
+  default     = "cloud-dw-key"
 }
 
 variable "ssh_ingress_cidr" {
