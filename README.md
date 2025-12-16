@@ -15,6 +15,7 @@ This week: S3 Raw Vault (versioned + block public), EC2 AL2023 box, IAM least pr
 cd infra/terraform
 terraform init
 terraform apply -auto-approve
+```
 
 ### Outputs
 
@@ -54,11 +55,9 @@ terraform destroy
 *   S3 **Block Public Access** enabled + **Versioning** for immutable raw data.
 *   EC2 instance role limited to this project’s raw vault bucket and SSM read.
 
-````
-
 ---
 
-## 4) Commands to run (local)
+## Commands to run (local)
 
 ```bash
 # from repo root
