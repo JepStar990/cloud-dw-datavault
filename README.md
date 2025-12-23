@@ -509,5 +509,3 @@ dagit -m orchestration.dagster.dw_pipeline --port 3001
 ## 14) Acknowledgements
 
 *   Thanks to the teams behind **DuckDB**, **dbt**, **Dagster**, and the open **API** providers (World Bank, Wikimedia, Open‑Meteo, USGS, GitHub, OpenAQ).
-
-```
