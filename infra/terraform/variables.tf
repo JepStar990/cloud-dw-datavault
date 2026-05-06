@@ -25,5 +25,5 @@ variable "ssh_key_name" {
 variable "ssh_ingress_cidr" {
   description = "CIDR for SSH ingress (restrict to your IP)"
   type        = string
-   default     = "0.0.0.0/0"
+  default     = "0.0.0.0/0"
 }

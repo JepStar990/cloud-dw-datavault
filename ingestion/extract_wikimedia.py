@@ -16,3 +16,15 @@ def run(project: str, article: str, access: str, agent: str, granularity: str, s
     s3_key = f"wikimedia/{project}/{encoded_article}/{start}_{end}/{ts_now()}.json.gz"
     uri = put_json(data, s3_key, compress=True, metadata={"source": "wikimedia-pageviews"})
     print(f"[wikimedia] wrote: {uri}")
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--project", required=True, help="e.g., en.wikipedia.org")
+    ap.add_argument("--article", required=True, help="e.g., Nelson_Mandela")
+    ap.add_argument("--access", default="all-access")
+    ap.add_argument("--agent", default="all-agents")
+    ap.add_argument("--granularity", default="daily")
+    ap.add_argument("--start", required=True, help="e.g., 20250101")
+    ap.add_argument("--end", required=True, help="e.g., 20250107")
+    args = ap.parse_args()
+    run(args.project, args.article, args.access, args.agent, args.granularity, args.start, args.end)

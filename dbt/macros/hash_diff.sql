@@ -8,4 +8,4 @@ sha256(
     )
   )
 )
-{%- endmacro %}~
+{%- endmacro %}

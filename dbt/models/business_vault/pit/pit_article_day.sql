@@ -13,7 +13,7 @@ agg as (
   select
     hk_article,
     project_id,
-    y    yyyymmdd,
+    yyyymmdd,
     sum(views) as views_day
   from base
   group by 1,2,3
