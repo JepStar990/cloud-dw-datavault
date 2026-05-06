@@ -7,13 +7,36 @@ profile: cloud_dw_duckdb
 model-paths: ["models"]
 analysis-paths: ["analysis"]
 macro-paths: ["macros"]
-target-path: "target"  # where dbt stores compiled SQL
+target-path: "target"
 clean-targets: ["target", "dbt_packages"]
 
 models:
   cloud_dw_datavault:
-    +materialized: view
+    staging:
+      +materialized: view
+      +schema: staging
+      +tags: ["staging", "raw"]
     raw_vault:
+      +materialized: view
       +schema: raw_vault
+      +tags: ["raw_vault"]
+    business_vault:
+      +tags: ["business_vault"]
+      hubs:
+        +materialized: table
+        +schema: main
+      links:
+        +materialized: table
+        +schema: main
+      satellites:
+        +materialized: incremental
+        +schema: main
+        +tags: ["incremental", "satellite"]
+      pit:
+        +materialized: table
+        +schema: main
+        +tags: ["pit"]
     marts:
+      +materialized: view
       +schema: marts
+      +tags: ["mart", "analytics"]
