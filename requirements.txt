@@ -1,4 +1,8 @@
 boto3
 botocore
 requests
-# dbt + duckdb + dagster already installed globally via pip --user
+duckdb
+dbt-core
+dbt-duckdb
+dagster
+dagit
