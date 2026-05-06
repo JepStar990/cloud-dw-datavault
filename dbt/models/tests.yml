@@ -1,12 +1,141 @@
 version: 2
 
 models:
+  # ============================================================
+  # STAGING
+  # ============================================================
+  - name: stg_worldbank
+    description: "Normalized World Bank indicator observations from S3 JSON arrays. Each row is one country-indicator-year observation."
+    columns:
+      - name: indicator_id
+        description: "World Bank indicator code (e.g. SP.POP.TOTL)."
+      - name: indicator_name
+        description: "Human-readable indicator label."
+      - name: country_id
+        description: "World Bank country code (e.g. ZA)."
+      - name: country_name
+        description: "Country display name."
+      - name: country_iso3
+        description: "ISO 3166-1 alpha-3 country code."
+        tests: [not_null]
+      - name: year
+        description: "Observation year (YYYY)."
+        tests: [not_null]
+      - name: unit
+        description: "Unit of measure for the indicator value."
+      - name: obs_status
+        description: "Observation status flag from World Bank."
+      - name: decimal_places
+        description: "Number of decimal places in the raw value."
+      - name: value
+        description: "Numeric indicator value."
+
+  - name: stg_openmeteo
+    description: "Hourly temperature and relative humidity from Open-Meteo API. Each row is one hour at one coordinate."
+    columns:
+      - name: lat
+        description: "Latitude of the weather station coordinate."
+        tests: [not_null]
+      - name: lon
+        description: "Longitude of the weather station coordinate."
+        tests: [not_null]
+      - name: ts
+        description: "Timestamp of the hourly reading (UTC)."
+        tests: [not_null]
+      - name: temperature_2m
+        description: "Air temperature at 2 meters above ground (°C)."
+      - name: relativehumidity_2m
+        description: "Relative humidity at 2 meters above ground (%)."
+
+  - name: stg_wikimedia
+    description: "Normalized Wikipedia page view counts from the Wikimedia REST API. Each row is one article, project, timestamp, and access method."
+    columns:
+      - name: project
+        description: "Wikimedia project domain (e.g. en.wikipedia.org)."
+        tests: [not_null]
+      - name: article
+        description: "Article title (URL-decoded)."
+        tests: [not_null]
+      - name: granularity
+        description: "Time granularity (daily, hourly, monthly)."
+      - name: access
+        description: "Access method (all-access, desktop, mobile-web, mobile-app)."
+      - name: agent
+        description: "Agent type (all-agents, user, spider, bot)."
+      - name: ts_yyyymmddhh
+        description: "Timestamp in YYYYMMDDHH format."
+        tests: [not_null]
+      - name: views
+        description: "Number of page views in the time window."
+
+  - name: stg_github
+    description: "GitHub commit metadata from the Commits REST API. Each row is one commit on one repository."
+    columns:
+      - name: commit_sha
+        description: "Full SHA-1 hash of the commit."
+        tests: [not_null]
+      - name: author_name
+        description: "Name of the commit author."
+      - name: author_date
+        description: "Timestamp when the commit was authored."
+      - name: committer_name
+        description: "Name of the committer."
+      - name: message
+        description: "Full commit message."
+      - name: verified
+        description: "Whether the commit signature was verified."
+
+  - name: stg_openaq
+    description: "Air quality sensor measurements from OpenAQ v3 API. Each row is one parameter reading at one timestamp."
+    columns:
+      - name: sensor_id
+        description: "OpenAQ sensor identifier."
+        tests: [not_null]
+      - name: parameter
+        description: "Measured parameter name (e.g. pm25, co2, o3)."
+        tests: [not_null]
+      - name: unit
+        description: "Unit of measurement (e.g. µg/m³)."
+      - name: date_utc
+        description: "UTC timestamp of the measurement."
+        tests: [not_null]
+      - name: value
+        description: "Numeric measurement value."
+      - name: lat
+        description: "Sensor latitude."
+      - name: lon
+        description: "Sensor longitude."
+
+  - name: stg_usgs
+    description: "Earthquake events from USGS GeoJSON feed. Each row is one seismic event."
+    columns:
+      - name: feature_id
+        description: "USGS event identifier."
+        tests: [not_null]
+      - name: title
+        description: "Event title (magnitude + location description)."
+      - name: magnitude
+        description: "Earthquake magnitude (Richter scale)."
+      - name: epoch_ms
+        description: "Event timestamp in milliseconds since epoch."
+      - name: place
+        description: "Human-readable location description."
+      - name: lon
+        description: "Epicenter longitude."
+      - name: lat
+        description: "Epicenter latitude."
+      - name: depth_km
+        description: "Hypocenter depth in kilometers."
+
+  # ============================================================
+  # HUBS
+  # ============================================================
   - name: hub_country
     description: "Unique ISO3 country codes from World Bank data."
     columns:
       - name: hk_country
         description: "SHA-256 hash of uppercase trimmed country ISO3 code."
-        tests: [not_null, unique]
+        tests: [not_null, unique, valid_hash_key]
       - name: country_bkey
         description: "Business key — ISO3 country code."
         tests: [not_null, unique]
@@ -16,7 +145,7 @@ models:
     columns:
       - name: hk_indicator
         description: "SHA-256 hash of uppercase trimmed indicator ID."
-        tests: [not_null, unique]
+        tests: [not_null, unique, valid_hash_key]
       - name: indicator_bkey
         description: "Business key — indicator identifier (e.g. SP.POP.TOTL)."
         tests: [not_null, unique]
@@ -26,7 +155,7 @@ models:
     columns:
       - name: hk_article
         description: "SHA-256 hash of uppercase trimmed article title."
-        tests: [not_null, unique]
+        tests: [not_null, unique, valid_hash_key]
       - name: article_bkey
         description: "Business key — article title."
         tests: [not_null, unique]
@@ -36,7 +165,7 @@ models:
     columns:
       - name: hk_location
         description: "SHA-256 hash of composite lat|lon key."
-        tests: [not_null, unique]
+        tests: [not_null, unique, valid_hash_key]
       - name: location_bkey
         description: "Composite business key — latitude|longitude."
         tests: [not_null, unique]
@@ -46,7 +175,7 @@ models:
     columns:
       - name: hk_commit
         description: "SHA-256 hash of commit SHA."
-        tests: [not_null, unique]
+        tests: [not_null, unique, valid_hash_key]
       - name: commit_bkey
         description: "Business key — full git commit SHA."
         tests: [not_null, unique]
@@ -56,17 +185,20 @@ models:
     columns:
       - name: hk_sensor
         description: "SHA-256 hash of sensor ID."
-        tests: [not_null, unique]
+        tests: [not_null, unique, valid_hash_key]
       - name: sensor_bkey
         description: "Business key — sensor identifier."
         tests: [not_null, unique]
 
+  # ============================================================
+  # LINKS
+  # ============================================================
   - name: link_country_indicator
     description: "Links countries to their available World Bank indicators."
     columns:
       - name: hk_country_indicator
         description: "SHA-256 hash of composite country|indicator key."
-        tests: [not_null, unique]
+        tests: [not_null, unique, valid_hash_key]
       - name: hk_country
         description: "Foreign key to hub_country."
         tests:
@@ -87,7 +219,7 @@ models:
     columns:
       - name: hk_project_article
         description: "SHA-256 hash of composite project|article key."
-        tests: [not_null, unique]
+        tests: [not_null, unique, valid_hash_key]
       - name: hk_article
         description: "Foreign key to hub_article."
         tests:
@@ -96,15 +228,18 @@ models:
                 to: ref('hub_article')
                 field: hk_article
 
+  # ============================================================
+  # SATELLITES
+  # ============================================================
   - name: sat_country_indicator_values
     description: "Yearly indicator values (population, etc.) — insert-only with hash diff change detection."
     columns:
       - name: hash_natural_key
         description: "SHA-256 hash of country|indicator|year composite key."
-        tests: [not_null]
+        tests: [not_null, valid_hash_key]
       - name: hd_attributes
         description: "SHA-256 hash diff of value, unit, obs_status, decimal fields for change detection."
-        tests: [not_null]
+        tests: [not_null, valid_hash_key]
       - name: load_dt
         description: "Timestamp when this record was loaded."
         tests: [not_null]
@@ -114,10 +249,10 @@ models:
     columns:
       - name: hash_natural_key
         description: "SHA-256 hash of article|project|date composite key."
-        tests: [not_null]
+        tests: [not_null, valid_hash_key]
       - name: hd_attributes
         description: "SHA-256 hash diff of views count for change detection."
-        tests: [not_null]
+        tests: [not_null, valid_hash_key]
       - name: load_dt
         description: "Timestamp when this record was loaded."
         tests: [not_null]
@@ -127,10 +262,10 @@ models:
     columns:
       - name: hash_natural_key
         description: "SHA-256 hash of location|timestamp composite key."
-        tests: [not_null]
+        tests: [not_null, valid_hash_key]
       - name: hd_attributes
         description: "SHA-256 hash diff of temperature and humidity values."
-        tests: [not_null]
+        tests: [not_null, valid_hash_key]
       - name: load_dt
         description: "Timestamp when this record was loaded."
         tests: [not_null]
@@ -140,10 +275,10 @@ models:
     columns:
       - name: hash_natural_key
         description: "SHA-256 hash of commit|author_date composite key."
-        tests: [not_null]
+        tests: [not_null, valid_hash_key]
       - name: hd_attributes
         description: "SHA-256 hash diff of author, committer, message, verified."
-        tests: [not_null]
+        tests: [not_null, valid_hash_key]
       - name: load_dt
         description: "Timestamp when this record was loaded."
         tests: [not_null]
@@ -153,10 +288,10 @@ models:
     columns:
       - name: hash_natural_key
         description: "SHA-256 hash of sensor|parameter|timestamp composite key."
-        tests: [not_null]
+        tests: [not_null, valid_hash_key]
       - name: hd_attributes
         description: "SHA-256 hash diff of value, unit, lat, lon."
-        tests: [not_null]
+        tests: [not_null, valid_hash_key]
       - name: load_dt
         description: "Timestamp when this record was loaded."
         tests: [not_null]

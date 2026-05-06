@@ -21,6 +21,47 @@ def load_metadata():
     return manifest, catalog
 
 
+def build_dag_data(manifest):
+    """Extract model lineage from manifest for DAG visualization."""
+    nodes = manifest.get("nodes", {})
+    edges = []
+    model_ids = set()
+    layer_map = {}
+
+    for node_id, node in nodes.items():
+        if node.get("resource_type") != "model":
+            continue
+        name = node.get("name", node_id)
+        model_ids.add(node_id)
+        # Categorize by path
+        path = node.get("original_file_path", "")
+        if "staging" in path:
+            layer_map[name] = "staging"
+        elif "hubs" in path:
+            layer_map[name] = "hubs"
+        elif "links" in path:
+            layer_map[name] = "links"
+        elif "satellites" in path:
+            layer_map[name] = "satellites"
+        elif "pit" in path:
+            layer_map[name] = "pits"
+        elif "marts" in path:
+            layer_map[name] = "marts"
+        elif "raw_vault" in path:
+            layer_map[name] = "raw_vault"
+        else:
+            layer_map[name] = "other"
+
+        deps = node.get("depends_on", {}).get("nodes", [])
+        for dep_id in deps:
+            # Only include model-to-model edges
+            if dep_id in model_ids or True:  # allow source refs too
+                dep_name = dep_id.split(".")[-1] if "." in dep_id else dep_id
+                edges.append((name, dep_name))
+
+    return edges, layer_map
+
+
 def build_model_catalog(manifest, catalog):
     nodes = manifest.get("nodes", {})
     sources = manifest.get("sources", {})
@@ -60,8 +101,45 @@ def build_model_catalog(manifest, catalog):
     return models
 
 
-def render_html(models):
+def render_html(models, edges, layer_map):
     snapshot_ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+
+    # Build Mermaid DAG from edges
+    layer_colors = {
+        "staging": "#667eea", "hubs": "#764ba2", "links": "#f093fb",
+        "satellites": "#f5576c", "pits": "#4facfe", "marts": "#43e97b",
+        "raw_vault": "#94a3b8", "other": "#94a3b8",
+    }
+
+    mermaid_lines = ["flowchart LR"]
+    seen_nodes = set()
+    for src, tgt in edges:
+        src_layer = layer_map.get(src, "other")
+        tgt_layer = layer_map.get(tgt, "other")
+        src_color = layer_colors.get(src_layer, "#94a3b8")
+        tgt_color = layer_colors.get(tgt_layer, "#94a3b8")
+
+        src_id = src.replace(".", "_").replace("-", "_")
+        tgt_id = tgt.replace(".", "_").replace("-", "_")
+
+        if src not in seen_nodes:
+            mermaid_lines.append(f'    {src_id}["{src}"]:::l_{src_layer}')
+            seen_nodes.add(src)
+        if tgt not in seen_nodes:
+            mermaid_lines.append(f'    {tgt_id}["{tgt}"]:::l_{tgt_layer}')
+            seen_nodes.add(tgt)
+        mermaid_lines.append(f"    {tgt_id} --> {src_id}")
+
+    for layer, color in layer_colors.items():
+        mermaid_lines.append(f'    classDef l_{layer} fill:{color}33,stroke:{color},color:{color},stroke-width:1px')
+
+    mermaid_src = "\n".join(mermaid_lines)
+
+    # Legend
+    legend_items = "".join(
+        f'<span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:{layer_colors[l]}33;color:{layer_colors[l]};border:1px solid {layer_colors[l]}44;margin:2px;">{l}</span>'
+        for l in ["staging", "hubs", "links", "satellites", "pits", "marts"] if l in layer_map.values()
+    )
 
     model_rows = ""
     for m in models:
@@ -108,6 +186,8 @@ def render_html(models):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>dbt Docs — cloud-dw-datavault</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({{startOnLoad:true,theme:'dark',themeVariables:{{darkMode:true,background:'#0f172a',primaryColor:'#4facfe',lineColor:'#475569',textColor:'#e2e8f0'}},flowchart:{{useMaxWidth:true,htmlLabels:true,curve:'basis'}}}});</script>
 <style>
 * {{ margin: 0; padding: 0; box-sizing: border-box; }}
 body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; padding: 24px; }}
@@ -169,6 +249,14 @@ td {{ padding: 10px 12px; border-bottom: 1px solid #1e293b; }}
     </div>
 </div>
 
+<div class="chart-box" style="margin-bottom:24px;">
+    <h3>Data Lineage DAG</h3>
+    <div style="margin-bottom:12px;">{legend_items}</div>
+    <pre class="mermaid" style="background:transparent;font-size:11px;line-height:1.4;overflow-x:auto;">
+{mermaid_src}
+    </pre>
+</div>
+
 <div class="table-box">
     <table>
         <thead>
@@ -193,8 +281,11 @@ def main():
     print("Building model catalog...")
     models = build_model_catalog(manifest, catalog)
 
+    print("Building DAG data...")
+    edges, layer_map = build_dag_data(manifest)
+
     print("Rendering docs site...")
-    html = render_html(models)
+    html = render_html(models, edges, layer_map)
 
     with open(OUTPUT, "w") as f:
         f.write(html)

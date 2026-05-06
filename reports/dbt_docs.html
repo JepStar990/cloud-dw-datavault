@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>dbt Docs — cloud-dw-datavault</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{darkMode:true,background:'#0f172a',primaryColor:'#4facfe',lineColor:'#475569',textColor:'#e2e8f0'},flowchart:{useMaxWidth:true,htmlLabels:true,curve:'basis'}});</script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; padding: 24px; }
@@ -37,7 +39,7 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
 
 <div class="header">
     <h1>📚 dbt Documentation</h1>
-    <p>Data Vault 2.0 model catalog · Snapshot 2026-05-06 16:40:20 UTC</p>
+    <p>Data Vault 2.0 model catalog · Snapshot 2026-05-06 17:01:57 UTC</p>
 </div>
 
 <div class="nav">
@@ -48,11 +50,11 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
 
 <div class="stats">
     <div class="stat">
-        <div class="value">33</div>
+        <div class="value">34</div>
         <div class="label">Models</div>
     </div>
     <div class="stat">
-        <div class="value">19</div>
+        <div class="value">75</div>
         <div class="label">Columns</div>
     </div>
     <div class="stat">
@@ -60,9 +62,138 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         <div class="label">Incremental</div>
     </div>
     <div class="stat">
-        <div class="value">14</div>
+        <div class="value">15</div>
         <div class="label">Tables</div>
     </div>
+</div>
+
+<div class="chart-box" style="margin-bottom:24px;">
+    <h3>Data Lineage DAG</h3>
+    <div style="margin-bottom:12px;"><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#667eea33;color:#667eea;border:1px solid #667eea44;margin:2px;">staging</span><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#764ba233;color:#764ba2;border:1px solid #764ba244;margin:2px;">hubs</span><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f093fb33;color:#f093fb;border:1px solid #f093fb44;margin:2px;">links</span><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f5576c33;color:#f5576c;border:1px solid #f5576c44;margin:2px;">satellites</span><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;border:1px solid #4facfe44;margin:2px;">pits</span><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;border:1px solid #43e97b44;margin:2px;">marts</span></div>
+    <pre class="mermaid" style="background:transparent;font-size:11px;line-height:1.4;overflow-x:auto;">
+flowchart LR
+    hub_article["hub_article"]:::l_hubs
+    stg_wikimedia["stg_wikimedia"]:::l_staging
+    stg_wikimedia --> hub_article
+    hub_commit["hub_commit"]:::l_hubs
+    stg_github["stg_github"]:::l_staging
+    stg_github --> hub_commit
+    hub_country["hub_country"]:::l_hubs
+    stg_worldbank["stg_worldbank"]:::l_staging
+    stg_worldbank --> hub_country
+    hub_indicator["hub_indicator"]:::l_hubs
+    stg_worldbank --> hub_indicator
+    hub_location["hub_location"]:::l_hubs
+    stg_openmeteo["stg_openmeteo"]:::l_staging
+    stg_openmeteo --> hub_location
+    hub_sensor["hub_sensor"]:::l_hubs
+    stg_openaq["stg_openaq"]:::l_staging
+    stg_openaq --> hub_sensor
+    link_country_indicator["link_country_indicator"]:::l_links
+    stg_worldbank --> link_country_indicator
+    link_project_article["link_project_article"]:::l_links
+    stg_wikimedia --> link_project_article
+    pit_article_day["pit_article_day"]:::l_pits
+    sat_article_views["sat_article_views"]:::l_satellites
+    sat_article_views --> pit_article_day
+    pit_country_indicator_year["pit_country_indicator_year"]:::l_pits
+    sat_country_indicator_values["sat_country_indicator_values"]:::l_satellites
+    sat_country_indicator_values --> pit_country_indicator_year
+    pit_weather_daily["pit_weather_daily"]:::l_pits
+    sat_weather_hourly["sat_weather_hourly"]:::l_satellites
+    sat_weather_hourly --> pit_weather_daily
+    pit_openaq_hourly["pit_openaq_hourly"]:::l_pits
+    sat_sensor_measurements["sat_sensor_measurements"]:::l_satellites
+    sat_sensor_measurements --> pit_openaq_hourly
+    pit_usgs_daily["pit_usgs_daily"]:::l_pits
+    stg_usgs["stg_usgs"]:::l_staging
+    stg_usgs --> pit_usgs_daily
+    pit_github_daily["pit_github_daily"]:::l_pits
+    sat_commit_meta["sat_commit_meta"]:::l_satellites
+    sat_commit_meta --> pit_github_daily
+    stg_wikimedia --> sat_article_views
+    stg_github --> sat_commit_meta
+    stg_worldbank --> sat_country_indicator_values
+    stg_openaq --> sat_sensor_measurements
+    stg_openmeteo --> sat_weather_hourly
+    article_traffic_daily["article_traffic_daily"]:::l_marts
+    hub_article --> article_traffic_daily
+    link_project_article --> article_traffic_daily
+    pit_article_day --> article_traffic_daily
+    population_by_country_year["population_by_country_year"]:::l_marts
+    hub_country --> population_by_country_year
+    hub_indicator --> population_by_country_year
+    pit_country_indicator_year --> population_by_country_year
+    weather_hourly["weather_hourly"]:::l_marts
+    hub_location --> weather_hourly
+    sat_weather_hourly --> weather_hourly
+    air_quality_measurements["air_quality_measurements"]:::l_marts
+    hub_sensor --> air_quality_measurements
+    sat_sensor_measurements --> air_quality_measurements
+    earthquake_recent["earthquake_recent"]:::l_marts
+    stg_usgs --> earthquake_recent
+    commit_history["commit_history"]:::l_marts
+    hub_commit --> commit_history
+    sat_commit_meta --> commit_history
+    dw_health_summary["dw_health_summary"]:::l_marts
+    stg_worldbank --> dw_health_summary
+    stg_openmeteo --> dw_health_summary
+    stg_wikimedia --> dw_health_summary
+    stg_github --> dw_health_summary
+    stg_openaq --> dw_health_summary
+    stg_usgs --> dw_health_summary
+    hub_country --> dw_health_summary
+    hub_indicator --> dw_health_summary
+    hub_article --> dw_health_summary
+    hub_location --> dw_health_summary
+    hub_commit --> dw_health_summary
+    hub_sensor --> dw_health_summary
+    link_country_indicator --> dw_health_summary
+    link_project_article --> dw_health_summary
+    sat_country_indicator_values --> dw_health_summary
+    sat_article_views --> dw_health_summary
+    sat_weather_hourly --> dw_health_summary
+    sat_commit_meta --> dw_health_summary
+    sat_sensor_measurements --> dw_health_summary
+    pit_country_indicator_year --> dw_health_summary
+    pit_article_day --> dw_health_summary
+    pit_weather_daily --> dw_health_summary
+    pit_openaq_hourly --> dw_health_summary
+    pit_usgs_daily --> dw_health_summary
+    pit_github_daily --> dw_health_summary
+    population_by_country_year --> dw_health_summary
+    article_traffic_daily --> dw_health_summary
+    weather_hourly --> dw_health_summary
+    air_quality_measurements --> dw_health_summary
+    earthquake_recent --> dw_health_summary
+    commit_history --> dw_health_summary
+    dw_data_quality["dw_data_quality"]:::l_marts
+    stg_worldbank --> dw_data_quality
+    stg_openmeteo --> dw_data_quality
+    stg_wikimedia --> dw_data_quality
+    stg_github --> dw_data_quality
+    stg_openaq --> dw_data_quality
+    stg_usgs --> dw_data_quality
+    hub_country --> dw_data_quality
+    hub_indicator --> dw_data_quality
+    hub_article --> dw_data_quality
+    hub_location --> dw_data_quality
+    hub_commit --> dw_data_quality
+    hub_sensor --> dw_data_quality
+    sat_country_indicator_values --> dw_data_quality
+    sat_article_views --> dw_data_quality
+    sat_weather_hourly --> dw_data_quality
+    sat_commit_meta --> dw_data_quality
+    sat_sensor_measurements --> dw_data_quality
+    classDef l_staging fill:#667eea33,stroke:#667eea,color:#667eea,stroke-width:1px
+    classDef l_hubs fill:#764ba233,stroke:#764ba2,color:#764ba2,stroke-width:1px
+    classDef l_links fill:#f093fb33,stroke:#f093fb,color:#f093fb,stroke-width:1px
+    classDef l_satellites fill:#f5576c33,stroke:#f5576c,color:#f5576c,stroke-width:1px
+    classDef l_pits fill:#4facfe33,stroke:#4facfe,color:#4facfe,stroke-width:1px
+    classDef l_marts fill:#43e97b33,stroke:#43e97b,color:#43e97b,stroke-width:1px
+    classDef l_raw_vault fill:#94a3b833,stroke:#94a3b8,color:#94a3b8,stroke-width:1px
+    classDef l_other fill:#94a3b833,stroke:#94a3b8,color:#94a3b8,stroke-width:1px
+    </pre>
 </div>
 
 <div class="table-box">
@@ -73,9 +204,9 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         <tbody>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>hub_article</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
-            <td>—</td>
+            <td>Unique Wikipedia article titles.</td>
             <td>1</td>
             <td>2</td>
         </tr>
@@ -89,13 +220,13 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
                 <tr class="col-row">
                     <td class="col-name">hk_article</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash of uppercase trimmed article title.</td>
                     <td class="col-tests">—</td>
                 </tr>
                 <tr class="col-row">
                     <td class="col-name">article_bkey</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>Business key — article title.</td>
                     <td class="col-tests">—</td>
                 </tr></tbody>
                 </table>
@@ -103,11 +234,11 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>hub_commit</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
-            <td>—</td>
+            <td>Unique GitHub commit SHAs.</td>
             <td>1</td>
-            <td>0</td>
+            <td>2</td>
         </tr>
         <tr class="col-detail">
             <td colspan="6">
@@ -115,15 +246,27 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
                     <thead>
                         <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hk_commit</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>SHA-256 hash of commit SHA.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">commit_bkey</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Business key — full git commit SHA.</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
                 </table>
             </td>
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>hub_country</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
-            <td>—</td>
+            <td>Unique ISO3 country codes from World Bank data.</td>
             <td>1</td>
             <td>2</td>
         </tr>
@@ -137,13 +280,13 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
                 <tr class="col-row">
                     <td class="col-name">hk_country</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash of uppercase trimmed country ISO3 code.</td>
                     <td class="col-tests">—</td>
                 </tr>
                 <tr class="col-row">
                     <td class="col-name">country_bkey</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>Business key — ISO3 country code.</td>
                     <td class="col-tests">—</td>
                 </tr></tbody>
                 </table>
@@ -151,9 +294,9 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>hub_indicator</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
-            <td>—</td>
+            <td>Unique World Bank indicator IDs.</td>
             <td>1</td>
             <td>2</td>
         </tr>
@@ -167,13 +310,13 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
                 <tr class="col-row">
                     <td class="col-name">hk_indicator</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash of uppercase trimmed indicator ID.</td>
                     <td class="col-tests">—</td>
                 </tr>
                 <tr class="col-row">
                     <td class="col-name">indicator_bkey</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>Business key — indicator identifier (e.g. SP.POP.TOTL).</td>
                     <td class="col-tests">—</td>
                 </tr></tbody>
                 </table>
@@ -181,45 +324,9 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>hub_location</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
-            <td>—</td>
-            <td>1</td>
-            <td>0</td>
-        </tr>
-        <tr class="col-detail">
-            <td colspan="6">
-                <table class="inner-table">
-                    <thead>
-                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </td>
-        </tr>
-        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
-            <td>hub_sensor</td>
-            <td>main</td>
-            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
-            <td>—</td>
-            <td>1</td>
-            <td>0</td>
-        </tr>
-        <tr class="col-detail">
-            <td colspan="6">
-                <table class="inner-table">
-                    <thead>
-                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </td>
-        </tr>
-        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
-            <td>link_country_indicator</td>
-            <td>main</td>
-            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
-            <td>—</td>
+            <td>Unique latitude/longitude pairs from weather and earthquake sources.</td>
             <td>1</td>
             <td>2</td>
         </tr>
@@ -231,27 +338,27 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
                     </thead>
                     <tbody>
                 <tr class="col-row">
-                    <td class="col-name">hk_country</td>
+                    <td class="col-name">hk_location</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash of composite lat|lon key.</td>
                     <td class="col-tests">—</td>
                 </tr>
                 <tr class="col-row">
-                    <td class="col-name">hk_indicator</td>
+                    <td class="col-name">location_bkey</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>Composite business key — latitude|longitude.</td>
                     <td class="col-tests">—</td>
                 </tr></tbody>
                 </table>
             </td>
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
-            <td>link_project_article</td>
-            <td>main</td>
+            <td>hub_sensor</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
-            <td>—</td>
+            <td>Unique OpenAQ sensor IDs.</td>
             <td>1</td>
-            <td>1</td>
+            <td>2</td>
         </tr>
         <tr class="col-detail">
             <td colspan="6">
@@ -261,9 +368,81 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
                     </thead>
                     <tbody>
                 <tr class="col-row">
+                    <td class="col-name">hk_sensor</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>SHA-256 hash of sensor ID.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">sensor_bkey</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Business key — sensor identifier.</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>link_country_indicator</td>
+            <td>main_main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>Links countries to their available World Bank indicators.</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hk_country_indicator</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>SHA-256 hash of composite country|indicator key.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">hk_country</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Foreign key to hub_country.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">hk_indicator</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Foreign key to hub_indicator.</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>link_project_article</td>
+            <td>main_main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>Links Wikipedia articles to their wiki projects.</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hk_project_article</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>SHA-256 hash of composite project|article key.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
                     <td class="col-name">hk_article</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>Foreign key to hub_article.</td>
                     <td class="col-tests">—</td>
                 </tr></tbody>
                 </table>
@@ -271,7 +450,7 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>pit_article_day</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
             <td>—</td>
             <td>1</td>
@@ -289,7 +468,7 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>pit_country_indicator_year</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
             <td>—</td>
             <td>1</td>
@@ -307,7 +486,7 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>pit_github_daily</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
             <td>—</td>
             <td>1</td>
@@ -325,7 +504,7 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>pit_openaq_hourly</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
             <td>—</td>
             <td>1</td>
@@ -343,7 +522,7 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>pit_usgs_daily</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
             <td>—</td>
             <td>1</td>
@@ -361,7 +540,7 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>pit_weather_daily</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
             <td>—</td>
             <td>1</td>
@@ -379,11 +558,11 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>sat_article_views</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f093fb33;color:#f093fb;">incremental</span></td>
-            <td>—</td>
+            <td>Daily Wikipedia article view counts — insert-only with hash diff change detection.</td>
             <td>1</td>
-            <td>2</td>
+            <td>3</td>
         </tr>
         <tr class="col-detail">
             <td colspan="6">
@@ -395,13 +574,19 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
                 <tr class="col-row">
                     <td class="col-name">hash_natural_key</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash of article|project|date composite key.</td>
                     <td class="col-tests">—</td>
                 </tr>
                 <tr class="col-row">
                     <td class="col-name">hd_attributes</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash diff of views count for change detection.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">load_dt</td>
+                    <td class="col-type">TIMESTAMP WITH TIME ZONE</td>
+                    <td>Timestamp when this record was loaded.</td>
                     <td class="col-tests">—</td>
                 </tr></tbody>
                 </table>
@@ -409,11 +594,11 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>sat_commit_meta</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f093fb33;color:#f093fb;">incremental</span></td>
-            <td>—</td>
+            <td>GitHub commit metadata (author, committer, message) — insert-only.</td>
             <td>1</td>
-            <td>2</td>
+            <td>3</td>
         </tr>
         <tr class="col-detail">
             <td colspan="6">
@@ -425,13 +610,19 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
                 <tr class="col-row">
                     <td class="col-name">hash_natural_key</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash of commit|author_date composite key.</td>
                     <td class="col-tests">—</td>
                 </tr>
                 <tr class="col-row">
                     <td class="col-name">hd_attributes</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash diff of author, committer, message, verified.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">load_dt</td>
+                    <td class="col-type">TIMESTAMP WITH TIME ZONE</td>
+                    <td>Timestamp when this record was loaded.</td>
                     <td class="col-tests">—</td>
                 </tr></tbody>
                 </table>
@@ -439,11 +630,11 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>sat_country_indicator_values</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f093fb33;color:#f093fb;">incremental</span></td>
-            <td>—</td>
+            <td>Yearly indicator values (population, etc.) — insert-only with hash diff change detection.</td>
             <td>1</td>
-            <td>2</td>
+            <td>3</td>
         </tr>
         <tr class="col-detail">
             <td colspan="6">
@@ -455,13 +646,19 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
                 <tr class="col-row">
                     <td class="col-name">hash_natural_key</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash of country|indicator|year composite key.</td>
                     <td class="col-tests">—</td>
                 </tr>
                 <tr class="col-row">
                     <td class="col-name">hd_attributes</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash diff of value, unit, obs_status, decimal fields for change detection.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">load_dt</td>
+                    <td class="col-type">TIMESTAMP WITH TIME ZONE</td>
+                    <td>Timestamp when this record was loaded.</td>
                     <td class="col-tests">—</td>
                 </tr></tbody>
                 </table>
@@ -469,11 +666,11 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>sat_sensor_measurements</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f093fb33;color:#f093fb;">incremental</span></td>
-            <td>—</td>
+            <td>OpenAQ air quality sensor measurements — insert-only.</td>
             <td>1</td>
-            <td>2</td>
+            <td>3</td>
         </tr>
         <tr class="col-detail">
             <td colspan="6">
@@ -485,13 +682,19 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
                 <tr class="col-row">
                     <td class="col-name">hash_natural_key</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash of sensor|parameter|timestamp composite key.</td>
                     <td class="col-tests">—</td>
                 </tr>
                 <tr class="col-row">
                     <td class="col-name">hd_attributes</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash diff of value, unit, lat, lon.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">load_dt</td>
+                    <td class="col-type">TIMESTAMP WITH TIME ZONE</td>
+                    <td>Timestamp when this record was loaded.</td>
                     <td class="col-tests">—</td>
                 </tr></tbody>
                 </table>
@@ -499,11 +702,11 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
         </tr>
         <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
             <td>sat_weather_hourly</td>
-            <td>main</td>
+            <td>main_main</td>
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f093fb33;color:#f093fb;">incremental</span></td>
-            <td>—</td>
+            <td>Hourly temperature and humidity from Open-Meteo — insert-only.</td>
             <td>1</td>
-            <td>2</td>
+            <td>3</td>
         </tr>
         <tr class="col-detail">
             <td colspan="6">
@@ -515,123 +718,21 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
                 <tr class="col-row">
                     <td class="col-name">hash_natural_key</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash of location|timestamp composite key.</td>
                     <td class="col-tests">—</td>
                 </tr>
                 <tr class="col-row">
                     <td class="col-name">hd_attributes</td>
                     <td class="col-type">VARCHAR</td>
-                    <td>—</td>
+                    <td>SHA-256 hash diff of temperature and humidity values.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">load_dt</td>
+                    <td class="col-type">TIMESTAMP WITH TIME ZONE</td>
+                    <td>Timestamp when this record was loaded.</td>
                     <td class="col-tests">—</td>
                 </tr></tbody>
-                </table>
-            </td>
-        </tr>
-        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
-            <td>stg_github</td>
-            <td>main</td>
-            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
-            <td>—</td>
-            <td>0</td>
-            <td>0</td>
-        </tr>
-        <tr class="col-detail">
-            <td colspan="6">
-                <table class="inner-table">
-                    <thead>
-                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </td>
-        </tr>
-        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
-            <td>stg_openaq</td>
-            <td>main</td>
-            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
-            <td>—</td>
-            <td>0</td>
-            <td>0</td>
-        </tr>
-        <tr class="col-detail">
-            <td colspan="6">
-                <table class="inner-table">
-                    <thead>
-                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </td>
-        </tr>
-        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
-            <td>stg_openmeteo</td>
-            <td>main</td>
-            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
-            <td>—</td>
-            <td>0</td>
-            <td>0</td>
-        </tr>
-        <tr class="col-detail">
-            <td colspan="6">
-                <table class="inner-table">
-                    <thead>
-                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </td>
-        </tr>
-        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
-            <td>stg_usgs</td>
-            <td>main</td>
-            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
-            <td>—</td>
-            <td>0</td>
-            <td>0</td>
-        </tr>
-        <tr class="col-detail">
-            <td colspan="6">
-                <table class="inner-table">
-                    <thead>
-                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </td>
-        </tr>
-        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
-            <td>stg_wikimedia</td>
-            <td>main</td>
-            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
-            <td>—</td>
-            <td>0</td>
-            <td>0</td>
-        </tr>
-        <tr class="col-detail">
-            <td colspan="6">
-                <table class="inner-table">
-                    <thead>
-                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </td>
-        </tr>
-        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
-            <td>stg_worldbank</td>
-            <td>main</td>
-            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
-            <td>—</td>
-            <td>0</td>
-            <td>0</td>
-        </tr>
-        <tr class="col-detail">
-            <td colspan="6">
-                <table class="inner-table">
-                    <thead>
-                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
-                    </thead>
-                    <tbody></tbody>
                 </table>
             </td>
         </tr>
@@ -677,6 +778,24 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
             <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
             <td>—</td>
             <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>dw_data_quality</td>
+            <td>main_marts</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>17</td>
             <td>0</td>
         </tr>
         <tr class="col-detail">
@@ -778,12 +897,378 @@ td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
                     <tbody></tbody>
                 </table>
             </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>stg_github</td>
+            <td>main_staging</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>GitHub commit metadata from the Commits REST API. Each row is one commit on one repository.</td>
+            <td>0</td>
+            <td>6</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">commit_sha</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Full SHA-1 hash of the commit.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">author_name</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Name of the commit author.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">author_date</td>
+                    <td class="col-type">TIMESTAMP</td>
+                    <td>Timestamp when the commit was authored.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">committer_name</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Name of the committer.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">message</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Full commit message.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">verified</td>
+                    <td class="col-type">BOOLEAN</td>
+                    <td>Whether the commit signature was verified.</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>stg_openaq</td>
+            <td>main_staging</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>Air quality sensor measurements from OpenAQ v3 API. Each row is one parameter reading at one timestamp.</td>
+            <td>0</td>
+            <td>7</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">sensor_id</td>
+                    <td class="col-type">BIGINT</td>
+                    <td>OpenAQ sensor identifier.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">parameter</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Measured parameter name (e.g. pm25, co2, o3).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">unit</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Unit of measurement (e.g. µg/m³).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">date_utc</td>
+                    <td class="col-type">TIMESTAMP</td>
+                    <td>UTC timestamp of the measurement.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">value</td>
+                    <td class="col-type">DOUBLE</td>
+                    <td>Numeric measurement value.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">lat</td>
+                    <td class="col-type">JSON</td>
+                    <td>Sensor latitude.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">lon</td>
+                    <td class="col-type">JSON</td>
+                    <td>Sensor longitude.</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>stg_openmeteo</td>
+            <td>main_staging</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>Hourly temperature and relative humidity from Open-Meteo API. Each row is one hour at one coordinate.</td>
+            <td>0</td>
+            <td>5</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">lat</td>
+                    <td class="col-type">DOUBLE</td>
+                    <td>Latitude of the weather station coordinate.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">lon</td>
+                    <td class="col-type">DOUBLE</td>
+                    <td>Longitude of the weather station coordinate.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">ts</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Timestamp of the hourly reading (UTC).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">temperature_2m</td>
+                    <td class="col-type">DOUBLE</td>
+                    <td>Air temperature at 2 meters above ground (°C).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">relativehumidity_2m</td>
+                    <td class="col-type">DOUBLE</td>
+                    <td>Relative humidity at 2 meters above ground (%).</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>stg_usgs</td>
+            <td>main_staging</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>Earthquake events from USGS GeoJSON feed. Each row is one seismic event.</td>
+            <td>0</td>
+            <td>8</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">feature_id</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>USGS event identifier.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">title</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Event title (magnitude + location description).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">magnitude</td>
+                    <td class="col-type">DOUBLE</td>
+                    <td>Earthquake magnitude (Richter scale).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">epoch_ms</td>
+                    <td class="col-type">BIGINT</td>
+                    <td>Event timestamp in milliseconds since epoch.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">place</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Human-readable location description.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">lon</td>
+                    <td class="col-type">DOUBLE</td>
+                    <td>Epicenter longitude.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">lat</td>
+                    <td class="col-type">DOUBLE</td>
+                    <td>Epicenter latitude.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">depth_km</td>
+                    <td class="col-type">DOUBLE</td>
+                    <td>Hypocenter depth in kilometers.</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>stg_wikimedia</td>
+            <td>main_staging</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>Normalized Wikipedia page view counts from the Wikimedia REST API. Each row is one article, project, timestamp, and access method.</td>
+            <td>0</td>
+            <td>7</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">project</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Wikimedia project domain (e.g. en.wikipedia.org).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">article</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Article title (URL-decoded).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">granularity</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Time granularity (daily, hourly, monthly).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">access</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Access method (all-access, desktop, mobile-web, mobile-app).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">agent</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Agent type (all-agents, user, spider, bot).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">ts_yyyymmddhh</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Timestamp in YYYYMMDDHH format.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">views</td>
+                    <td class="col-type">BIGINT</td>
+                    <td>Number of page views in the time window.</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>stg_worldbank</td>
+            <td>main_staging</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>Normalized World Bank indicator observations from S3 JSON arrays. Each row is one country-indicator-year observation.</td>
+            <td>0</td>
+            <td>10</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">indicator_id</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>World Bank indicator code (e.g. SP.POP.TOTL).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">indicator_name</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Human-readable indicator label.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">country_id</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>World Bank country code (e.g. ZA).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">country_name</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Country display name.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">country_iso3</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>ISO 3166-1 alpha-3 country code.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">year</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Observation year (YYYY).</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">unit</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Unit of measure for the indicator value.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">obs_status</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Observation status flag from World Bank.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">decimal_places</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>Number of decimal places in the raw value.</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">value</td>
+                    <td class="col-type">DOUBLE</td>
+                    <td>Numeric indicator value.</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
         </tr></tbody>
     </table>
 </div>
 
 <div class="footer">
-    Generated by cloud-dw-datavault · 2026-05-06 16:40:20 UTC · Click rows to expand columns
+    Generated by cloud-dw-datavault · 2026-05-06 17:01:57 UTC · Click rows to expand columns
 </div>
 
 </body>
