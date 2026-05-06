@@ -2,35 +2,80 @@ version: 2
 
 models:
   - name: hub_country
+    description: "Unique ISO3 country codes from World Bank data."
     columns:
       - name: hk_country
+        description: "SHA-256 hash of uppercase trimmed country ISO3 code."
         tests: [not_null, unique]
       - name: country_bkey
+        description: "Business key — ISO3 country code."
         tests: [not_null, unique]
 
   - name: hub_indicator
+    description: "Unique World Bank indicator IDs."
     columns:
       - name: hk_indicator
+        description: "SHA-256 hash of uppercase trimmed indicator ID."
         tests: [not_null, unique]
       - name: indicator_bkey
+        description: "Business key — indicator identifier (e.g. SP.POP.TOTL)."
         tests: [not_null, unique]
 
   - name: hub_article
+    description: "Unique Wikipedia article titles."
     columns:
       - name: hk_article
+        description: "SHA-256 hash of uppercase trimmed article title."
         tests: [not_null, unique]
       - name: article_bkey
+        description: "Business key — article title."
+        tests: [not_null, unique]
+
+  - name: hub_location
+    description: "Unique latitude/longitude pairs from weather and earthquake sources."
+    columns:
+      - name: hk_location
+        description: "SHA-256 hash of composite lat|lon key."
+        tests: [not_null, unique]
+      - name: location_bkey
+        description: "Composite business key — latitude|longitude."
+        tests: [not_null, unique]
+
+  - name: hub_commit
+    description: "Unique GitHub commit SHAs."
+    columns:
+      - name: hk_commit
+        description: "SHA-256 hash of commit SHA."
+        tests: [not_null, unique]
+      - name: commit_bkey
+        description: "Business key — full git commit SHA."
+        tests: [not_null, unique]
+
+  - name: hub_sensor
+    description: "Unique OpenAQ sensor IDs."
+    columns:
+      - name: hk_sensor
+        description: "SHA-256 hash of sensor ID."
+        tests: [not_null, unique]
+      - name: sensor_bkey
+        description: "Business key — sensor identifier."
         tests: [not_null, unique]
 
   - name: link_country_indicator
+    description: "Links countries to their available World Bank indicators."
     columns:
+      - name: hk_country_indicator
+        description: "SHA-256 hash of composite country|indicator key."
+        tests: [not_null, unique]
       - name: hk_country
+        description: "Foreign key to hub_country."
         tests:
           - relationships:
               arguments:
                 to: ref('hub_country')
                 field: hk_country
       - name: hk_indicator
+        description: "Foreign key to hub_indicator."
         tests:
           - relationships:
               arguments:
@@ -38,8 +83,13 @@ models:
                 field: hk_indicator
 
   - name: link_project_article
+    description: "Links Wikipedia articles to their wiki projects."
     columns:
+      - name: hk_project_article
+        description: "SHA-256 hash of composite project|article key."
+        tests: [not_null, unique]
       - name: hk_article
+        description: "Foreign key to hub_article."
         tests:
           - relationships:
               arguments:
@@ -47,36 +97,66 @@ models:
                 field: hk_article
 
   - name: sat_country_indicator_values
+    description: "Yearly indicator values (population, etc.) — insert-only with hash diff change detection."
     columns:
       - name: hash_natural_key
+        description: "SHA-256 hash of country|indicator|year composite key."
         tests: [not_null]
       - name: hd_attributes
+        description: "SHA-256 hash diff of value, unit, obs_status, decimal fields for change detection."
+        tests: [not_null]
+      - name: load_dt
+        description: "Timestamp when this record was loaded."
         tests: [not_null]
 
   - name: sat_article_views
+    description: "Daily Wikipedia article view counts — insert-only with hash diff change detection."
     columns:
       - name: hash_natural_key
+        description: "SHA-256 hash of article|project|date composite key."
         tests: [not_null]
       - name: hd_attributes
+        description: "SHA-256 hash diff of views count for change detection."
+        tests: [not_null]
+      - name: load_dt
+        description: "Timestamp when this record was loaded."
         tests: [not_null]
 
   - name: sat_weather_hourly
+    description: "Hourly temperature and humidity from Open-Meteo — insert-only."
     columns:
       - name: hash_natural_key
+        description: "SHA-256 hash of location|timestamp composite key."
         tests: [not_null]
       - name: hd_attributes
+        description: "SHA-256 hash diff of temperature and humidity values."
+        tests: [not_null]
+      - name: load_dt
+        description: "Timestamp when this record was loaded."
         tests: [not_null]
 
   - name: sat_commit_meta
+    description: "GitHub commit metadata (author, committer, message) — insert-only."
     columns:
       - name: hash_natural_key
+        description: "SHA-256 hash of commit|author_date composite key."
         tests: [not_null]
       - name: hd_attributes
+        description: "SHA-256 hash diff of author, committer, message, verified."
+        tests: [not_null]
+      - name: load_dt
+        description: "Timestamp when this record was loaded."
         tests: [not_null]
 
   - name: sat_sensor_measurements
+    description: "OpenAQ air quality sensor measurements — insert-only."
     columns:
       - name: hash_natural_key
+        description: "SHA-256 hash of sensor|parameter|timestamp composite key."
         tests: [not_null]
       - name: hd_attributes
+        description: "SHA-256 hash diff of value, unit, lat, lon."
+        tests: [not_null]
+      - name: load_dt
+        description: "Timestamp when this record was loaded."
         tests: [not_null]

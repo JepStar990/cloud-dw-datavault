@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cloud-dw-datavault — Warehouse Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; padding: 24px; }
+.header { text-align: center; padding: 32px 0; }
+.header h1 { font-size: 28px; color: #f8fafc; }
+.header p { color: #94a3b8; margin-top: 4px; font-size: 14px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+.card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; text-align: center; }
+.card .value { font-size: 32px; font-weight: 700; color: #f8fafc; }
+.card .label { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+.charts { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+.chart-box { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; }
+.chart-box h3 { font-size: 14px; color: #94a3b8; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+.chart-box canvas { max-height: 320px; }
+.table-box { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; overflow-x: auto; }
+.table-box h3 { font-size: 14px; color: #94a3b8; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 10px 12px; border-bottom: 1px solid #334155; color: #94a3b8; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; }
+td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
+tr:hover td { background: #1e293b; }
+.num { text-align: right; font-variant-numeric: tabular-nums; font-family: 'SF Mono', 'Fira Code', monospace; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.layer-staging      { background: #667eea33; color: #667eea; }
+.layer-hubs         { background: #764ba233; color: #a78bfa; }
+.layer-links        { background: #f093fb33; color: #f093fb; }
+.layer-satellites   { background: #f5576c33; color: #f5576c; }
+.layer-pits         { background: #4facfe33; color: #4facfe; }
+.layer-marts        { background: #43e97b33; color: #43e97b; }
+.footer { text-align: center; padding: 24px; color: #475569; font-size: 12px; }
+@media (max-width: 768px) { .charts { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>☁️ cloud-dw-datavault</h1>
+    <p>Data Warehouse Health Dashboard · Snapshot 2026-05-06 16:40:24 UTC</p>
+</div>
+
+<div class="cards">
+    <div class="card">
+        <div class="value">31</div>
+        <div class="label">Total Models</div>
+    </div>
+    <div class="card">
+        <div class="value">14,725</div>
+        <div class="label">Total Rows</div>
+    </div>
+    <div class="card">
+        <div class="value">6/6</div>
+        <div class="label">Sources Active</div>
+    </div>
+    <div class="card">
+        <div class="value">8.76 MB</div>
+        <div class="label">Database Size</div>
+    </div>
+</div>
+
+<div class="charts">
+    <div class="chart-box">
+        <h3>Rows by Layer</h3>
+        <canvas id="layerChart"></canvas>
+    </div>
+    <div class="chart-box">
+        <h3>Rows by Model</h3>
+        <canvas id="modelChart"></canvas>
+    </div>
+</div>
+
+<div class="table-box">
+    <h3>All Models (31)</h3>
+    <table>
+        <thead>
+            <tr><th>Model</th><th>Layer</th><th>Rows</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>stg_worldbank</td>
+            <td><span class="badge layer-staging">staging</span></td>
+            <td class="num">262</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>stg_openmeteo</td>
+            <td><span class="badge layer-staging">staging</span></td>
+            <td class="num">840</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>stg_wikimedia</td>
+            <td><span class="badge layer-staging">staging</span></td>
+            <td class="num">28</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>stg_github</td>
+            <td><span class="badge layer-staging">staging</span></td>
+            <td class="num">21</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>stg_openaq</td>
+            <td><span class="badge layer-staging">staging</span></td>
+            <td class="num">2,000</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>stg_usgs</td>
+            <td><span class="badge layer-staging">staging</span></td>
+            <td class="num">1,262</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>hub_country</td>
+            <td><span class="badge layer-hubs">hubs</span></td>
+            <td class="num">1</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>hub_indicator</td>
+            <td><span class="badge layer-hubs">hubs</span></td>
+            <td class="num">1</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>hub_article</td>
+            <td><span class="badge layer-hubs">hubs</span></td>
+            <td class="num">1</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>hub_location</td>
+            <td><span class="badge layer-hubs">hubs</span></td>
+            <td class="num">2</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>hub_commit</td>
+            <td><span class="badge layer-hubs">hubs</span></td>
+            <td class="num">3</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>hub_sensor</td>
+            <td><span class="badge layer-hubs">hubs</span></td>
+            <td class="num">1</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>link_country_indicator</td>
+            <td><span class="badge layer-links">links</span></td>
+            <td class="num">1</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>link_project_article</td>
+            <td><span class="badge layer-links">links</span></td>
+            <td class="num">1</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>sat_country_indicator_values</td>
+            <td><span class="badge layer-satellites">satellites</span></td>
+            <td class="num">197</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>sat_article_views</td>
+            <td><span class="badge layer-satellites">satellites</span></td>
+            <td class="num">21</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>sat_weather_hourly</td>
+            <td><span class="badge layer-satellites">satellites</span></td>
+            <td class="num">672</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>sat_commit_meta</td>
+            <td><span class="badge layer-satellites">satellites</span></td>
+            <td class="num">18</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>sat_sensor_measurements</td>
+            <td><span class="badge layer-satellites">satellites</span></td>
+            <td class="num">2,000</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>pit_country_indicator_year</td>
+            <td><span class="badge layer-pits">pits</span></td>
+            <td class="num">67</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>pit_article_day</td>
+            <td><span class="badge layer-pits">pits</span></td>
+            <td class="num">7</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>pit_weather_daily</td>
+            <td><span class="badge layer-pits">pits</span></td>
+            <td class="num">14</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>pit_openaq_hourly</td>
+            <td><span class="badge layer-pits">pits</span></td>
+            <td class="num">2,000</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>pit_usgs_daily</td>
+            <td><span class="badge layer-pits">pits</span></td>
+            <td class="num">1,262</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>pit_github_daily</td>
+            <td><span class="badge layer-pits">pits</span></td>
+            <td class="num">18</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>population_by_country_year</td>
+            <td><span class="badge layer-marts">marts</span></td>
+            <td class="num">66</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>article_traffic_daily</td>
+            <td><span class="badge layer-marts">marts</span></td>
+            <td class="num">7</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>weather_hourly</td>
+            <td><span class="badge layer-marts">marts</span></td>
+            <td class="num">672</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>air_quality_measurements</td>
+            <td><span class="badge layer-marts">marts</span></td>
+            <td class="num">2,000</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>earthquake_recent</td>
+            <td><span class="badge layer-marts">marts</span></td>
+            <td class="num">1,262</td>
+            <td>✅</td>
+        </tr>
+        <tr>
+            <td>commit_history</td>
+            <td><span class="badge layer-marts">marts</span></td>
+            <td class="num">18</td>
+            <td>✅</td>
+        </tr></tbody>
+    </table>
+</div>
+
+<div class="footer">
+    Generated by cloud-dw-datavault reports engine · 2026-05-06 16:40:24 UTC · Deploy to GitHub Pages
+</div>
+
+<script>
+const layerCtx = document.getElementById('layerChart').getContext('2d');
+new Chart(layerCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ["Staging", "Hubs", "Links", "Satellites", "Pits", "Marts"],
+        datasets: [{
+            data: [4413, 9, 2, 2908, 3368, 4025],
+            backgroundColor: ["#667eea", "#764ba2", "#f093fb", "#f5576c", "#4facfe", "#43e97b"],
+            borderColor: '#0f172a',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', padding: 16, font: { size: 12 } } } }
+    }
+});
+
+const modelCtx = document.getElementById('modelChart').getContext('2d');
+new Chart(modelCtx, {
+    type: 'bar',
+    data: {
+        labels: ["stg_worldbank", "stg_openmeteo", "stg_wikimedia", "stg_github", "stg_openaq", "stg_usgs", "hub_country", "hub_indicator", "hub_article", "hub_location", "hub_commit", "hub_sensor", "link_country_indicator", "link_project_article", "sat_country_indicator_values", "sat_article_views", "sat_weather_hourly", "sat_commit_meta", "sat_sensor_measurements", "pit_country_indicator_year", "pit_article_day", "pit_weather_daily", "pit_openaq_hourly", "pit_usgs_daily", "pit_github_daily", "population_by_country_year", "article_traffic_daily", "weather_hourly", "air_quality_measurements", "earthquake_recent", "commit_history"],
+        datasets: [{
+            label: 'Row count',
+            data: [262, 840, 28, 21, 2000, 1262, 1, 1, 1, 2, 3, 1, 1, 1, 197, 21, 672, 18, 2000, 67, 7, 14, 2000, 1262, 18, 66, 7, 672, 2000, 1262, 18],
+            backgroundColor: ["#667eea", "#667eea", "#667eea", "#667eea", "#667eea", "#667eea", "#764ba2", "#764ba2", "#764ba2", "#764ba2", "#764ba2", "#764ba2", "#f093fb", "#f093fb", "#f5576c", "#f5576c", "#f5576c", "#f5576c", "#f5576c", "#4facfe", "#4facfe", "#4facfe", "#4facfe", "#4facfe", "#4facfe", "#43e97b", "#43e97b", "#43e97b", "#43e97b", "#43e97b", "#43e97b"],
+            borderRadius: 4
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+            y: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { display: false } }
+        }
+    }
+});
+</script>
+</body>
+</html>

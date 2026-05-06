@@ -3,32 +3,49 @@ version: 2
 sources:
   - name: raw_vault
     description: "Raw JSON payloads in S3 (immutable)."
+    freshness:
+      warn_after: {count: 7, period: day}
+      error_after: {count: 14, period: day}
 
     tables:
       - name: worldbank_pop_za
-        description: "World Bank SP.POP.TOTL for ZA (multiple dumps)."
+        description: "World Bank SP.POP.TOTL for ZA — yearly population observations stored as JSON arrays."
+        freshness:
+          warn_after: {count: 30, period: day}
         meta:
           s3_glob: "s3://cloud-dw-datavault-raw-vault/worldbank/SP.POP.TOTL/ZA/*.json.gz"
+
       - name: wikimedia_mandela
-        description: "Wikimedia pageviews for Nelson_Mandela (daily range dump)."
+        description: "Wikimedia pageviews for Nelson_Mandela — daily range dumps with per-article view counts."
+        freshness:
+          warn_after: {count: 2, period: day}
         meta:
           s3_glob: "s3://cloud-dw-datavault-raw-vault/wikimedia/en.wikipedia.org/Nelson_Mandela/*/*.json.gz"
+
       - name: usgs_all_day
-        description: "USGS earthquakes all_day GeoJSON dumps."
+        description: "USGS earthquakes all_day GeoJSON dumps — worldwide seismic events in the past day."
+        freshness:
+          warn_after: {count: 1, period: day}
         meta:
           s3_glob: "s3://cloud-dw-datavault-raw-vault/usgs/earthquakes/all_day/*.geojson.gz"
 
       - name: openmeteo_weather
-        description: "Open-Meteo hourly weather dumps."
+        description: "Open-Meteo hourly weather dumps (temperature, humidity) for configured coordinates."
+        freshness:
+          warn_after: {count: 1, period: day}
         meta:
           s3_glob: "s3://cloud-dw-datavault-raw-vault/openmeteo/*/*"
 
       - name: github_commits
-        description: "GitHub commit dumps for public repos."
+        description: "GitHub commit dumps for public repos — per-commit metadata."
+        freshness:
+          warn_after: {count: 7, period: day}
         meta:
           s3_glob: "s3://cloud-dw-datavault-raw-vault/github/*/*/*.json.gz"
 
       - name: openaq_sensor
-        description: "OpenAQ sensor measurement dumps."
+        description: "OpenAQ sensor measurement dumps — air quality readings per sensor."
+        freshness:
+          warn_after: {count: 3, period: day}
         meta:
           s3_glob: "s3://cloud-dw-datavault-raw-vault/openaq/sensors/*/*/*/*.json.gz"

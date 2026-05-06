@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dbt Docs — cloud-dw-datavault</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; padding: 24px; }
+.header { text-align: center; padding: 32px 0; }
+.header h1 { font-size: 24px; color: #f8fafc; }
+.header p { color: #94a3b8; margin-top: 4px; font-size: 14px; }
+.nav { text-align: center; margin-bottom: 24px; }
+.nav a { color: #4facfe; margin: 0 12px; font-size: 13px; text-decoration: none; }
+.stats { display: flex; gap: 16px; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; }
+.stat { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px 24px; text-align: center; }
+.stat .value { font-size: 22px; font-weight: 700; color: #f8fafc; }
+.stat .label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+.table-box { background: #1e293b; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 10px 12px; border-bottom: 1px solid #334155; color: #94a3b8; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; background: #1e293b; }
+td { padding: 10px 12px; border-bottom: 1px solid #1e293b; }
+.model-row { cursor: pointer; }
+.model-row:hover td { background: #1e293b; }
+.col-detail { display: none; }
+.col-detail.open { display: table-row; }
+.col-detail td { padding: 0; background: #0b1120; }
+.inner-table { margin: 8px 24px; width: calc(100% - 48px); }
+.inner-table th { font-size: 10px; background: transparent; }
+.col-name { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: #e2e8f0; }
+.col-type { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: #94a3b8; }
+.col-tests { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: #43e97b; }
+.footer { text-align: center; padding: 24px; color: #475569; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>📚 dbt Documentation</h1>
+    <p>Data Vault 2.0 model catalog · Snapshot 2026-05-06 16:40:20 UTC</p>
+</div>
+
+<div class="nav">
+    <a href="index.html">Home</a>
+    <a href="dw_dashboard.html">Dashboard</a>
+    <a href="dbt_docs.html">dbt Docs</a>
+</div>
+
+<div class="stats">
+    <div class="stat">
+        <div class="value">33</div>
+        <div class="label">Models</div>
+    </div>
+    <div class="stat">
+        <div class="value">19</div>
+        <div class="label">Columns</div>
+    </div>
+    <div class="stat">
+        <div class="value">5</div>
+        <div class="label">Incremental</div>
+    </div>
+    <div class="stat">
+        <div class="value">14</div>
+        <div class="label">Tables</div>
+    </div>
+</div>
+
+<div class="table-box">
+    <table>
+        <thead>
+            <tr><th>Model</th><th>Schema</th><th>Type</th><th>Description</th><th>Refs</th><th>Cols</th></tr>
+        </thead>
+        <tbody>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>hub_article</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hk_article</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">article_bkey</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>hub_commit</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>hub_country</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hk_country</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">country_bkey</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>hub_indicator</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hk_indicator</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">indicator_bkey</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>hub_location</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>hub_sensor</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>link_country_indicator</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hk_country</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">hk_indicator</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>link_project_article</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hk_article</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>pit_article_day</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>pit_country_indicator_year</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>pit_github_daily</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>pit_openaq_hourly</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>pit_usgs_daily</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>pit_weather_daily</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>sat_article_views</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f093fb33;color:#f093fb;">incremental</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hash_natural_key</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">hd_attributes</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>sat_commit_meta</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f093fb33;color:#f093fb;">incremental</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hash_natural_key</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">hd_attributes</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>sat_country_indicator_values</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f093fb33;color:#f093fb;">incremental</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hash_natural_key</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">hd_attributes</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>sat_sensor_measurements</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f093fb33;color:#f093fb;">incremental</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hash_natural_key</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">hd_attributes</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>sat_weather_hourly</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f093fb33;color:#f093fb;">incremental</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody>
+                <tr class="col-row">
+                    <td class="col-name">hash_natural_key</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr>
+                <tr class="col-row">
+                    <td class="col-name">hd_attributes</td>
+                    <td class="col-type">VARCHAR</td>
+                    <td>—</td>
+                    <td class="col-tests">—</td>
+                </tr></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>stg_github</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>stg_openaq</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>stg_openmeteo</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>stg_usgs</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>stg_wikimedia</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>stg_worldbank</td>
+            <td>main</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>air_quality_measurements</td>
+            <td>main_marts</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>article_traffic_daily</td>
+            <td>main_marts</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>commit_history</td>
+            <td>main_marts</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>dw_health_summary</td>
+            <td>main_marts</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#4facfe33;color:#4facfe;">table</span></td>
+            <td>—</td>
+            <td>31</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>earthquake_recent</td>
+            <td>main_marts</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>population_by_country_year</td>
+            <td>main_marts</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>weather_hourly</td>
+            <td>main_marts</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr>
+        <tr class="model-row" onclick="this.nextElementSibling.classList.toggle('open')">
+            <td>worldbank_raw</td>
+            <td>main_raw_vault</td>
+            <td><span style="display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#43e97b33;color:#43e97b;">view</span></td>
+            <td>—</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr class="col-detail">
+            <td colspan="6">
+                <table class="inner-table">
+                    <thead>
+                        <tr><th>Column</th><th>Type</th><th>Description</th><th>Tests</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </td>
+        </tr></tbody>
+    </table>
+</div>
+
+<div class="footer">
+    Generated by cloud-dw-datavault · 2026-05-06 16:40:20 UTC · Click rows to expand columns
+</div>
+
+</body>
+</html>
