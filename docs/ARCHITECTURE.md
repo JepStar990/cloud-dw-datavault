@@ -6,93 +6,151 @@ cloud-dw-datavault is a free-tier-friendly data platform on AWS that implements 
 
 ## System Architecture
 
+```mermaid
+flowchart TB
+    subgraph Sources["Public APIs (6 sources)"]
+        WB[World Bank]
+        WIKI[Wikimedia Pageviews]
+        OM[Open-Meteo Weather]
+        USGS[USGS Earthquakes]
+        OAQ[OpenAQ Air Quality]
+        GH[GitHub Commits]
+    end
+
+    subgraph Ingestion["Ingestion Layer (EC2 Python)"]
+        direction LR
+        E1[extract_worldbank.py]
+        E2[extract_wikimedia.py]
+        E3[extract_openmeteo.py]
+        E4[extract_usgs.py]
+        E5[extract_openaq.py]
+        E6[extract_github.py]
+    end
+
+    WB --> E1
+    WIKI --> E2
+    OM --> E3
+    USGS --> E4
+    OAQ --> E5
+    GH --> E6
+
+    subgraph Storage["S3 Raw Vault"]
+        S3[("s3://cloud-dw-datavault-raw-vault<br/>versioned · SSE · blocked public access")]
+    end
+
+    E1 & E2 & E3 & E4 & E5 & E6 --> S3
+
+    subgraph Transform["Transformation Layer (DuckDB + dbt on EC2)"]
+        direction TB
+        STG[6 staging views<br/>read_json_auto from S3]
+        BV[Business Vault<br/>6 hubs · 2 links · 5 satellites]
+        PIT[6 PIT tables<br/>point-in-time snapshots]
+        MARTS[6 mart views<br/>end-user analytics]
+        STG --> BV --> PIT --> MARTS
+    end
+
+    S3 --> STG
+
+    subgraph Present["Presentation"]
+        MB[Metabase]
+        DG[Dagster orchestration]
+    end
+
+    MARTS --> MB
+    DG -.->|schedules| Ingestion
+    DG -.->|schedules| Transform
 ```
-                    +-------------------+
-                    |   Public APIs      |
-                    | (6 data sources)   |
-                    +--------+----------+
-                             |
-                             v
-              +--------------+--------------+
-              |     Ingestion Layer         |
-              |  (Python extractors on EC2) |
-              +--------------+--------------+
-                             |
-                             v
-              +--------------+--------------+
-              |        S3 Raw Vault         |
-              |  (versioned, SSE, blocked   |
-              |   public access)            |
-              +--------------+--------------+
-                             |
-                             v
-              +--------------+--------------+
-              |     Transformation Layer    |
-              |  DuckDB + dbt (on EC2)       |
-              |  - Staging (normalize JSON) |
-              |  - Business Vault           |
-              |  - PIT tables               |
-              |  - Marts (analytics views)  |
-              +--------------+--------------+
-                             |
-                             v
-              +--------------+--------------+
-              |    Presentation Layer       |
-              |  Metabase (Docker)          |
-              |  + Dagster (orchestration)  |
-              +-----------------------------+
+
+## Data Vault 2.0 Layers
+
+```mermaid
+flowchart LR
+    subgraph L1["Layer 1 — Raw Vault"]
+        S3_RAW["Immutable JSON payloads in S3<br/>gzipped · versioned · organized by source"]
+    end
+
+    subgraph L2["Layer 2 — Staging"]
+        STG_V["stg_worldbank · stg_wikimedia · stg_openmeteo<br/>stg_usgs · stg_openaq · stg_github"]
+    end
+
+    subgraph L3["Layer 3 — Business Vault"]
+        direction TB
+        HUBS["Hubs<br/>hub_country · hub_indicator · hub_article<br/>hub_commit · hub_location · hub_sensor"]
+        LINKS["Links<br/>link_country_indicator<br/>link_project_article"]
+        SATS["Satellites<br/>sat_country_indicator_values · sat_article_views<br/>sat_weather_hourly · sat_commit_meta<br/>sat_sensor_measurements"]
+    end
+
+    subgraph L4["Layer 4 — PIT Tables"]
+        PITS["pit_article_day · pit_country_indicator_year<br/>pit_weather_daily · pit_openaq_hourly<br/>pit_usgs_daily · pit_github_daily"]
+    end
+
+    subgraph L5["Layer 5 — Marts"]
+        MARTS_V["article_traffic_daily · population_by_country_year<br/>weather_hourly · air_quality_measurements<br/>earthquake_recent · commit_history"]
+    end
+
+    L1 --> L2 --> L3 --> L4 --> L5
 ```
 
-## Data Vault 2.0 Design
+## Entity-Relationship Diagram
 
-### Layer 1: Raw Vault (S3)
-Immutable storage of full JSON payloads from each source. Files are gzipped and organized by data source, entity, and timestamp. Versioning is enabled on the S3 bucket for auditability.
+```mermaid
+erDiagram
+    hub_country ||--o{ link_country_indicator : "hk_country"
+    hub_indicator ||--o{ link_country_indicator : "hk_indicator"
+    link_country_indicator ||--o| sat_country_indicator_values : "hk_country_indicator"
+    link_country_indicator ||--o{ pit_country_indicator_year : "hk_country_indicator"
 
-### Layer 2: Staging
-dbt views that use DuckDB's `read_json_auto()` to parse raw JSON from S3 directly. Each staging model normalizes one source's JSON into a flat relational structure.
+    hub_article ||--o{ link_project_article : "hk_article"
+    link_project_article ||--o| sat_article_views : "hk_project_article"
+    link_project_article ||--o{ pit_article_day : "hk_project_article"
 
-### Layer 3: Business Vault
+    hub_location ||--o| sat_weather_hourly : "hk_location"
+    hub_location ||--o{ pit_weather_daily : "hk_location"
 
-**Hubs** — Unique business keys with hash primary keys.
-- `hub_country` — ISO3 country codes
-- `hub_indicator` — World Bank indicator IDs
-- `hub_article` — Wikipedia article titles
-- `hub_commit` — GitHub commit SHAs
-- `hub_location` — Latitude/longitude pairs
-- `hub_sensor` — OpenAQ sensor IDs
+    hub_commit ||--o| sat_commit_meta : "hk_commit"
+    hub_commit ||--o{ pit_github_daily : "hk_commit"
 
-**Links** — Many-to-many relationships between hubs.
-- `link_country_indicator` — Which indicators exist for which countries
-- `link_project_article` — Which articles belong to which wiki projects
+    hub_sensor ||--o| sat_sensor_measurements : "hk_sensor"
+    hub_sensor ||--o{ pit_openaq_hourly : "hk_sensor"
 
-**Satellites** — Descriptive attributes with insert-only change tracking.
-- `sat_country_indicator_values` — Population values, units, observation status
-- `sat_article_views` — Page view counts, access type, agent type
-- `sat_weather_hourly` — Temperature, humidity measurements
-- `sat_commit_meta` — Author, committer, message, verification status
-- `sat_sensor_measurements` — Air quality values, coordinates
+    hub_location ||--o{ pit_usgs_daily : "hk_location"
 
-### Layer 4: PIT Tables
-Pre-computed point-in-time tables that join hubs with their latest satellite data at common grains:
-- `pit_article_day` — Daily article views
-- `pit_country_indicator_year` — Yearly indicator values
-- `pit_weather_daily` — Daily weather averages
-- `pit_openaq_hourly` — Hourly air quality
-- `pit_usgs_daily` — Daily earthquake summary
-- `pit_github_daily` — Commit metadata snapshot
+    pit_article_day ||--o{ article_traffic_daily : joins
+    hub_article ||--o{ article_traffic_daily : joins
+    link_project_article ||--o{ article_traffic_daily : joins
 
-### Layer 5: Marts
-Analytics views joining PIT tables with hubs and links:
-- `article_traffic_daily` — Article view traffic by project
-- `population_by_country_year` — Population over time
-- `weather_hourly` — Temperature and humidity by location
-- `air_quality_measurements` — Sensor readings with coordinates
-- `earthquake_recent` — Recent seismic events
-- `commit_history` — GitHub commit log
+    pit_country_indicator_year ||--o{ population_by_country_year : joins
+    pit_weather_daily ||--o{ weather_hourly : joins
+    pit_openaq_hourly ||--o{ air_quality_measurements : joins
+    pit_usgs_daily ||--o{ earthquake_recent : joins
+    pit_github_daily ||--o{ commit_history : joins
+```
+
+## Orchesration DAG
+
+```mermaid
+flowchart TD
+    T0["Dagster Schedule<br/>runs daily or on-demand"] --> T1
+
+    subgraph extract["Extract (parallel)"]
+        T1[worldbank] & T2[wikimedia] & T3[openmeteo]
+        T4[usgs] & T5[openaq] & T6[github]
+    end
+
+    T1 & T2 & T3 & T4 & T5 & T6 --> T7
+
+    T7["dbt build<br/>staging → business_vault → marts"]
+    T7 --> T8["dbt test<br/>not_null · unique · referential"]
+
+    T8 --> T9{{"All tests pass?"}}
+    T9 -->|yes| T10["Dagster run succeeds"]
+    T9 -->|no| T11["Alert / retry"]
+```
 
 ## Hashing Standard
 
 All hash keys use SHA-256 with standardized inputs:
+
 ```
 SHA-256(UPPER(TRIM(business_key)))
 ```

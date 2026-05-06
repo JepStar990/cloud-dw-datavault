@@ -1,0 +1,119 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      run_integration:
+        description: "Run full dbt build against S3 (requires AWS secrets)"
+        type: boolean
+        default: false
+
+jobs:
+  dbt-parse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install dbt-core dbt-duckdb duckdb
+
+      - name: Setup dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml << 'EOF'
+          cloud_dw_duckdb:
+            target: ci
+            outputs:
+              ci:
+                type: duckdb
+                path: /tmp/ci.duckdb
+                threads: 2
+          EOF
+
+      - name: dbt deps
+        working-directory: dbt
+        run: dbt deps
+
+      - name: dbt parse
+        working-directory: dbt
+        run: dbt parse
+
+  python-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff
+
+      - name: Lint with ruff
+        run: ruff check ingestion/ --output-format=github
+
+      - name: Check formatting
+        run: ruff format --check ingestion/
+
+  dbt-integration:
+    if: github.event.inputs.run_integration == 'true' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: aws
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install dbt-core dbt-duckdb duckdb
+
+      - name: Setup dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml << 'EOF'
+          cloud_dw_duckdb:
+            target: ci
+            outputs:
+              ci:
+                type: duckdb
+                path: /tmp/ci.duckdb
+                threads: 2
+                extensions:
+                  - httpfs
+                  - parquet
+                settings:
+                  s3_region: "eu-west-1"
+                  s3_access_key_id: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+                  s3_secret_access_key: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          EOF
+
+      - name: dbt deps
+        working-directory: dbt
+        run: dbt deps
+
+      - name: dbt build
+        working-directory: dbt
+        run: dbt build

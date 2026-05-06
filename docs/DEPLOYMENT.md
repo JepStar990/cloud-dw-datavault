@@ -197,15 +197,38 @@ PYEOF
 
 ## CI/CD Pipeline
 
-The GitHub Actions workflow (`.github/workflows/terraform.yml`) runs on every push and PR:
-1. Terraform fmt check
-2. Terraform init (with AWS credentials from secrets)
-3. Terraform validate
-4. Terraform plan
+Two GitHub Actions workflows validate every push and PR.
 
-To configure CI:
-1. Add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to repository secrets
-2. Set `AWS_REGION` in repository variables (or use `vars.AWS_REGION`)
+### CI (`ci.yml`)
+
+| Job | What it does | Requires AWS |
+|-----|-------------|:---:|
+| `dbt-parse` | Validates all SQL/Jinja in dbt models, macros, tests | No |
+| `python-lint` | Lints and format-checks `ingestion/` with ruff | No |
+| `dbt-integration` | Full `dbt build` against live S3 data | Yes |
+
+The integration job runs automatically on push to main and can be triggered manually on PRs via `workflow_dispatch`. It requires an `aws` deployment environment with `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` secrets.
+
+### Terraform (`terraform.yml`)
+
+| Step | What it does |
+|------|-------------|
+| `terraform fmt -check` | Validates HCL formatting |
+| `terraform init` | Initializes providers and backends |
+| `terraform validate` | Validates Terraform syntax |
+| `terraform plan` | Dry-run to show infrastructure diffs |
+
+### Configuring secrets
+
+Add these to your repository **Settings → Secrets and variables → Actions**:
+
+| Secret / Variable | Used by |
+|-------------------|---------|
+| `AWS_ACCESS_KEY_ID` (secret) | Terraform + dbt integration |
+| `AWS_SECRET_ACCESS_KEY` (secret) | Terraform + dbt integration |
+| `AWS_REGION` (variable) | Terraform init/plan |
+
+For the integration job, create an **Environment** named `aws` and attach the AWS secrets to it.
 
 ## Production Considerations
 
