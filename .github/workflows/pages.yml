@@ -33,6 +33,7 @@ jobs:
           cp reports/index.html _site/index.html
           cp reports/dw_dashboard.html _site/dw_dashboard.html
           cp reports/dbt_docs.html _site/dbt_docs.html 2>/dev/null || echo "dbt_docs.html not found, skipping"
+          cp reports/use_case.html _site/use_case.html 2>/dev/null || echo "use_case.html not found, skipping"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

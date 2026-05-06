@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>City Intelligence — cloud-dw-datavault</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; padding: 24px; line-height: 1.6; }
+.container { max-width: 900px; margin: 0 auto; }
+.nav { text-align: center; margin-bottom: 32px; padding: 16px 0; border-bottom: 1px solid #1e293b; }
+.nav a { color: #4facfe; margin: 0 16px; font-size: 13px; text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+h1 { font-size: 28px; color: #f8fafc; text-align: center; margin-bottom: 8px; }
+.subtitle { text-align: center; color: #94a3b8; font-size: 14px; margin-bottom: 40px; }
+
+.hero { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid #334155; border-radius: 16px; padding: 40px; margin-bottom: 32px; text-align: center; }
+.hero .badge { display: inline-block; background: #43e97b33; color: #43e97b; padding: 4px 14px; border-radius: 100px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
+.hero h2 { font-size: 20px; margin-bottom: 8px; }
+.hero p { color: #94a3b8; font-size: 14px; max-width: 650px; margin: 0 auto; }
+
+.profile { background: #1e293b; border: 1px solid #334155; border-radius: 12px; overflow: hidden; margin-bottom: 32px; }
+.profile-header { background: #0b1120; padding: 16px 24px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+.profile-header h3 { font-size: 16px; }
+.profile-body { padding: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+
+.metric { background: #0b1120; border: 1px solid #1e293b; border-radius: 8px; padding: 16px; }
+.metric .source { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #4facfe; margin-bottom: 6px; font-weight: 600; }
+.metric .value { font-size: 24px; font-weight: 700; color: #f8fafc; margin-bottom: 4px; }
+.metric .label { font-size: 12px; color: #94a3b8; }
+.metric .range { font-size: 11px; color: #475569; margin-top: 4px; }
+
+.score-bar { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 32px; text-align: center; }
+.score-bar .big { font-size: 48px; font-weight: 800; color: #43e97b; }
+.score-bar .label { color: #94a3b8; font-size: 13px; }
+
+.arch { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; margin-bottom: 32px; }
+.arch h3 { font-size: 14px; color: #94a3b8; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+.arch pre { background: #0b1120; padding: 20px; border-radius: 8px; font-size: 12px; line-height: 1.6; overflow-x: auto; color: #e2e8f0; }
+
+.pitch { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 32px; margin-bottom: 32px; }
+.pitch h3 { color: #f8fafc; margin-bottom: 12px; }
+.pitch p { color: #94a3b8; font-size: 14px; margin-bottom: 12px; }
+.pitch .highlight { color: #43e97b; }
+
+.footer { text-align: center; padding: 24px; color: #475569; font-size: 12px; border-top: 1px solid #1e293b; margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="dw_dashboard.html">Dashboard</a>
+    <a href="dbt_docs.html">dbt Docs</a>
+    <a href="use_case.html"><strong>Use Case</strong></a>
+</nav>
+
+<h1>Johannesburg City Intelligence Platform</h1>
+<p class="subtitle">Six independent APIs — one unified city profile. Zero schema changes.</p>
+
+<div class="hero">
+    <span class="badge">Cross-Source Analytics</span>
+    <h2>One row describes an entire city</h2>
+    <p>Population from the World Bank, weather from Open-Meteo, air quality from OpenAQ, public interest from Wikimedia, seismic risk from USGS, and developer activity from GitHub — converged through Data Vault 2.0 hash keys into a single query.</p>
+</div>
+
+<div class="profile">
+    <div class="profile-header">
+        <h3> Johannesburg, ZA — Live Profile</h3>
+        <span style="color:#475569;font-size:12px;">dbt city_profile mart</span>
+    </div>
+    <div class="profile-body">
+        <div class="metric">
+            <div class="source">World Bank</div>
+            <div class="value">64.0M</div>
+            <div class="label">Population (2024)</div>
+            <div class="range">65 years of census data</div>
+        </div>
+        <div class="metric">
+            <div class="source">Open-Meteo</div>
+            <div class="value">14.8°C / 70.7%</div>
+            <div class="label">Avg Temp / Humidity</div>
+            <div class="range">14 days · hourly readings</div>
+        </div>
+        <div class="metric">
+            <div class="source">OpenAQ</div>
+            <div class="value">0.038 ppm</div>
+            <div class="label">Avg Ozone (O3)</div>
+            <div class="range">2,000 readings · sensor 3917</div>
+        </div>
+        <div class="metric">
+            <div class="source">Wikimedia</div>
+            <div class="value">7,518 / day</div>
+            <div class="label">Mandela Page Views</div>
+            <div class="range">7 days · Jan 2025</div>
+        </div>
+        <div class="metric">
+            <div class="source">USGS</div>
+            <div class="value">0 nearby</div>
+            <div class="label">Seismic Events</div>
+            <div class="range">1,262 worldwide · ±5° band</div>
+        </div>
+        <div class="metric">
+            <div class="source">GitHub</div>
+            <div class="value">21 commits</div>
+            <div class="label">3 contributors</div>
+            <div class="range">2011–2012 · octocat/Hello-World</div>
+        </div>
+    </div>
+</div>
+
+<div class="score-bar">
+    <div class="big">5/6</div>
+    <div class="label">independent data sources active in a single row</div>
+</div>
+
+<div class="pitch">
+    <h3>Why this matters</h3>
+    <p>None of these six APIs were designed to work together. The World Bank doesn't know about Open-Meteo. Wikimedia doesn't know about OpenAQ. USGS doesn't know about GitHub. They have different schemas, different time grains, different coordinate systems, and different update cadences.</p>
+    <p>The <span class="highlight">Data Vault 2.0 architecture</span> makes them joinable — not through fragile foreign keys or hard-coded mappings, but through <span class="highlight">hash keys</span> derived from business keys (country codes, coordinates, article titles). Every new source enriches the city profile without touching existing models.</p>
+    <p class="highlight"><strong>Adding a 7th source requires zero schema changes</strong> — new hub, new satellite, join through existing PIT tables. That's the architecture pitch.</p>
+</div>
+
+<div class="arch">
+    <h3>How the data flows</h3>
+    <pre>
+S3 Raw Vault (immutable JSON.gz)
+    │
+    ├─ World Bank ──→ stg_worldbank ──→ hub_country ──→ sat_country_indicator_values
+    ├─ Open-Meteo ──→ stg_openmeteo ──→ hub_location ─┬─→ sat_weather_hourly
+    ├─ OpenAQ ──────→ stg_openaq ─────→ hub_sensor ───┤
+    ├─ Wikimedia ───→ stg_wikimedia ──→ hub_article ──┤
+    ├─ USGS ────────→ stg_usgs (S3 view) ─────────────┤
+    └─ GitHub ──────→ stg_github ──────→ hub_commit ──┘
+                                                       │
+                                          PIT tables (temporal alignment)
+                                                       │
+                                          city_profile mart ← 1 row, 6 sources</pre>
+</div>
+
+<div class="pitch">
+    <h3>Real-world applications</h3>
+    <p><strong>Environmental justice</strong> — overlay air quality with population density to identify at-risk communities.</p>
+    <p><strong>Disaster response</strong> — when a quake hits, did Wikipedia traffic spike? Did GitHub contributors in the region go silent?</p>
+    <p><strong>Climate migration</strong> — 65 years of population data joined with weather trends. Are warming regions seeing population shifts?</p>
+    <p><strong>City dashboard</strong> — mayors and planners get a single pane of glass across domains that typically live in separate departments.</p>
+</div>
+
+<div class="footer">
+    cloud-dw-datavault · Data Vault 2.0 on AWS · DuckDB · dbt · Dagster
+</div>
+
+</div>
+
+</body>
+</html>
