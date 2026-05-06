@@ -59,3 +59,24 @@ models:
         tests: [not_null]
       - name: hd_attributes
         tests: [not_null]
+
+  - name: sat_weather_hourly
+    columns:
+      - name: hash_natural_key
+        tests: [not_null]
+      - name: hd_attributes
+        tests: [not_null]
+
+  - name: sat_commit_meta
+    columns:
+      - name: hash_natural_key
+        tests: [not_null]
+      - name: hd_attributes
+        tests: [not_null]
+
+  - name: sat_sensor_measurements
+    columns:
+      - name: hash_natural_key
+        tests: [not_null]
+      - name: hd_attributes
+        tests: [not_null]

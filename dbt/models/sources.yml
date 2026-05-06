@@ -17,3 +17,18 @@ sources:
         description: "USGS earthquakes all_day GeoJSON dumps."
         meta:
           s3_glob: "s3://cloud-dw-datavault-raw-vault/usgs/earthquakes/all_day/*.geojson.gz"
+
+      - name: openmeteo_weather
+        description: "Open-Meteo hourly weather dumps."
+        meta:
+          s3_glob: "s3://cloud-dw-datavault-raw-vault/openmeteo/*/*"
+
+      - name: github_commits
+        description: "GitHub commit dumps for public repos."
+        meta:
+          s3_glob: "s3://cloud-dw-datavault-raw-vault/github/*/*/*.json.gz"
+
+      - name: openaq_sensor
+        description: "OpenAQ sensor measurement dumps."
+        meta:
+          s3_glob: "s3://cloud-dw-datavault-raw-vault/openaq/sensors/*/*/*/*.json.gz"
