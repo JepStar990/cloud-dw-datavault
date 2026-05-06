@@ -1,7 +1,7 @@
 {{ config(materialized="view") }}
 select
   a.article_bkey as article,
-  p.project_id   as project,
+  l.project_id   as project,
   d.yyyymmdd,
   d.views_day
 from {{ ref('hub_article') }} a

@@ -1,3 +1,4 @@
--- Example: create a view pointing to latest worldbank JSON in S3 via DuckDB functions (to be adjusted in Week 3).
--- In Week 2 we keep raw unmodeled in S3. This is a placeholder.
-select 1 as stub;
+-- Raw Vault: data lives in S3 as immutable JSON payloads.
+-- This schema exists for organizational purposes.
+-- Use staging models (stg_*) to read and normalize raw JSON from S3.
+select 1 as stub

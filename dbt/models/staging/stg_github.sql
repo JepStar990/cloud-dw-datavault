@@ -1,22 +1,17 @@
 {{ config(materialized="view") }}
 
--- Dumps under: s3://.../github/<owner>/<repo>/<ts>.json.gz
+-- GitHub commits API returns an array of commit objects
+-- read_json_auto returns one row per commit with structured columns
 with raw as (
-  select * from read_json_auto('s3://cloud-dw-datavault-raw-vault/github/*/*/*.json.gz')
-),
-flat as (
-  select
-    raw->>'$.sha'                        as commit_sha,
-    raw->'$.commit'->>'$.author.name'    as author_name,
-    raw->'$.commit'->>'$.author.date'    as author_date,
-    raw->'$.commit'->>'$.committer.name' as committer_name,
-    raw->'$.commit'->>'$.message'        as message,
-    raw->'$.verification'->>'$.verified' as verified
-  from raw
-  where json_valid(raw)
+  select *
+  from read_json_auto('s3://cloud-dw-datavault-raw-vault/github/*/*/*.json.gz')
 )
 select
-  commit_sha,
-  author_name, author_date, committer_name, message,
-  case when lower(verified)='true' then true else false end as verified
-from flat
+  sha                              as commit_sha,
+  commit.author.name               as author_name,
+  commit.author.date               as author_date,
+  commit.committer.name            as committer_name,
+  commit.message                   as message,
+  commit.verification.verified     as verified
+from raw
+where sha is not null

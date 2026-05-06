@@ -7,7 +7,7 @@ with base as (
 keys as (
   select
     {{ hash_key("cast(sensor_id as varchar)") }} as hk_sensor,
-    {{ hash_key("upper(trim(cast(sensor_id as varchar))) || '|' || upper(trim(parameter)) || '|' || upper(trim(date_utc))") }} as hash_natural_key,
+    {{ hash_key("upper(trim(cast(sensor_id as varchar))) || '|' || upper(trim(parameter)) || '|' || upper(trim(cast(date_utc as varchar)))") }} as hash_natural_key,
     *
   from base
 ),
